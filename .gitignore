@@ -1,0 +1,81 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+
+# PyTorch
+*.pth
+*.pt
+
+# ONNX
+*.onnx
+
+# Data
+data/*.pkl
+data/*.png
+data/*.csv
+
+# Models
+models/*.pth
+models/*.onnx
+models/*.png
+
+# Build
+build/
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Outputs
+trajectory_output.csv
+cpp_inference_result.png
+visualize_cpp_output.py
+
+# ONNX Runtime downloaded files
+onnxruntime-*.tgz
+onnxruntime-*/
+
+# Logs
+*.log
