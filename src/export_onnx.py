@@ -29,11 +29,6 @@ def export_to_onnx(model, onnx_path, input_size, trajectory_length, grid_size=20
     start = torch.randn(input_size, 2)
     goal = torch.randn(input_size, 2)
 
-    # 导出选项
-    export_options = torch.onnx.ExportOptions(
-        dynamic_shapes=True,
-    )
-
     print(f"导出模型到: {onnx_path}")
     print(f"输入形状: start {start.shape}, goal {goal.shape}")
 
