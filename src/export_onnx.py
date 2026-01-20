@@ -38,7 +38,7 @@ def export_to_onnx(model, onnx_path, input_size, trajectory_length, grid_size=20
             (start, goal),
             onnx_path,
             export_params=True,
-            opset_version=17,  # 使用较新的opset版本
+            opset_version=18,  # PyTorch 2.x 的最新 ONNX 导出器需要 opset 18
             do_constant_folding=True,
             input_names=['start', 'goal'],
             output_names=['trajectory'],

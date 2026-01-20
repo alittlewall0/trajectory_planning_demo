@@ -73,7 +73,7 @@ public:
         // 获取输入形状
         auto input_start = session_.GetInputTypeInfo(0);
         auto input_start_tensor = input_start.GetTensorTypeAndShapeInfo();
-        input_start_tensor.GetShape(input_shape_start_);
+        input_shape_start_ = input_start_tensor.GetShape();
 
         auto input_goal = session_.GetInputTypeInfo(1);
         auto input_goal_tensor = input_goal.GetTensorTypeAndShapeInfo();
@@ -82,7 +82,7 @@ public:
         // 获取输出形状
         auto output = session_.GetOutputTypeInfo(0);
         auto output_tensor = output.GetTensorTypeAndShapeInfo();
-        output_tensor.GetShape(output_shape_);
+        output_shape_ = output_tensor.GetShape();
 
         std::cout << "模型加载成功!\n";
         std::cout << "输入 'start' 形状: [";
@@ -101,21 +101,25 @@ public:
         std::vector<float> start_input = {start_x, start_y};
         std::vector<float> goal_input = {goal_x, goal_y};
 
+        // 创建输入形状 - 使用实际的batch size (1) 替换动态维度
+        std::vector<int64_t> start_shape = {1, 2};
+        std::vector<int64_t> goal_shape = {1, 2};
+
         // 创建输入tensor
         auto start_tensor = Ort::Value::CreateTensor<float>(
             memory_info_,
             start_input.data(),
             start_input.size(),
-            input_shape_start_.data(),
-            input_shape_start_.size()
+            start_shape.data(),
+            start_shape.size()
         );
 
         auto goal_tensor = Ort::Value::CreateTensor<float>(
             memory_info_,
             goal_input.data(),
             goal_input.size(),
-            input_shape_goal_.data(),
-            input_shape_goal_.size()
+            goal_shape.data(),
+            goal_shape.size()
         );
 
         // 执行推理
@@ -324,7 +328,7 @@ int main(int argc, char* argv[]) {
         std::cout << "示例 2: 多个测试案例\n";
         std::cout << "==========================================\n\n";
 
-        // 示例2: 多个测试案例
+        // 示例2: 多个测试案例 - 使用循环单次预测以避免动态batch问题
         std::vector<std::pair<float, float>> starts = {
             {5.0f, 5.0f},
             {15.0f, 5.0f},
@@ -337,9 +341,19 @@ int main(int argc, char* argv[]) {
             {15.0f, 5.0f}
         };
 
-        std::cout << "批量推理 " << starts.size() << " 个案例...\n\n";
+        std::cout << "推理 " << starts.size() << " 个案例...\n\n";
 
-        auto trajectories = predictor.predictBatch(starts, goals);
+        std::vector<Trajectory> trajectories;
+        for (size_t i = 0; i < starts.size(); ++i) {
+            std::cout << "案例 " << (i + 1) << ": ";
+            std::cout << "从 (" << starts[i].first << ", " << starts[i].second << ") ";
+            std::cout << "到 (" << goals[i].first << ", " << goals[i].second << ")\n";
+
+            Trajectory traj = predictor.predict(starts[i].first, starts[i].second,
+                                                goals[i].first, goals[i].second);
+            trajectories.push_back(traj);
+            std::cout << "  完成! 轨迹点数: " << traj.points.size() << "\n\n";
+        }
 
         for (size_t i = 0; i < trajectories.size(); ++i) {
             std::cout << "案例 " << i + 1 << ":\n";
